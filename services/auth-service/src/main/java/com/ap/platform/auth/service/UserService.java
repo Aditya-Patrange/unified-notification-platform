@@ -2,8 +2,11 @@ package com.ap.platform.auth.service;
 
 import java.util.Collections;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ap.platform.auth.dto.RegisterRequestDto;
+import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.entity.Role;
 import com.ap.platform.auth.entity.User;
 import com.ap.platform.auth.repository.RoleRepository;
@@ -15,18 +18,20 @@ import jakarta.transaction.Transactional;
 public class UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
 	
-	public UserService(UserRepository userRepository,RoleRepository roleRepository) {
+	public UserService(UserRepository userRepository,RoleRepository roleRepository,PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@Transactional
-	public User registerUser(String username, String email, String password) {
-		if(userRepository.existByUsername(username)) {
+	public UserResponseDto registerUser(RegisterRequestDto request) {
+		if(userRepository.existByUsername(request.getUsername())) {
 			throw new RuntimeException("Username already exist");
 		}
-		if(userRepository.existByEmail(email)) {
+		if(userRepository.existByEmail(request.getEmail())) {
 			throw new RuntimeException("Email already exist");
 		}
 		
@@ -34,12 +39,14 @@ public class UserService {
 								orElseThrow(()-> new RuntimeException("Default role not found"));
 		
 		User user = new User();
-		user.setUsername(username);
-		user.setEmail(email);
-		user.setPassword(password);//hash it later
+		user.setUsername(request.getUsername());
+		user.setEmail(request.getEmail());
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setRoles(Collections.singleton(userRole));
 		
-		return userRepository.save(user);
+		User savedUser =  userRepository.save(user);
+		
+		return new UserResponseDto(savedUser.getId(), savedUser.getUsername() , savedUser.getEmail());
 	}
 	
 }
