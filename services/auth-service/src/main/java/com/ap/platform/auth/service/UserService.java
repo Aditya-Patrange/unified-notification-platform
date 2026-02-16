@@ -28,10 +28,10 @@ public class UserService {
 	
 	@Transactional
 	public UserResponseDto registerUser(RegisterRequestDto request) {
-		if(userRepository.existByUsername(request.getUsername())) {
+		if(userRepository.existsByUsername(request.getUsername())) {
 			throw new RuntimeException("Username already exist");
 		}
-		if(userRepository.existByEmail(request.getEmail())) {
+		if(userRepository.existsByEmail(request.getEmail())) {
 			throw new RuntimeException("Email already exist");
 		}
 		
