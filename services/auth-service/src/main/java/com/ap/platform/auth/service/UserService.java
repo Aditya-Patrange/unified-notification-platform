@@ -6,9 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ap.platform.auth.dto.LoginRequestDto;
-import com.ap.platform.auth.dto.LoginResponseDto;
+import com.ap.platform.auth.dto.RefreshTokenResponseDto;
 import com.ap.platform.auth.dto.RegisterRequestDto;
 import com.ap.platform.auth.dto.UserResponseDto;
+import com.ap.platform.auth.entity.RefreshToken;
 import com.ap.platform.auth.entity.Role;
 import com.ap.platform.auth.entity.User;
 import com.ap.platform.auth.repository.RoleRepository;
@@ -23,13 +24,15 @@ public class UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
+	private final RefreshTokenService refreshTokenService;
 	
-	
-	public UserService(UserRepository userRepository,RoleRepository roleRepository,PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+	public UserService(UserRepository userRepository,RoleRepository roleRepository,
+			PasswordEncoder passwordEncoder, JwtUtil jwtUtil,RefreshTokenService refreshTokenService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtUtil = jwtUtil;
+		this.refreshTokenService = refreshTokenService;
 	}
 	
 	@Transactional
@@ -56,15 +59,17 @@ public class UserService {
 	}
 	
 	
-	public LoginResponseDto login(LoginRequestDto request) {
+	public RefreshTokenResponseDto login(LoginRequestDto request) {
 		User user = userRepository.findByUsername(request.getUsername())
 					.orElseThrow(() -> new RuntimeException("Invalid username or password"));
 		
 		if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new RuntimeException("Invalid username or password");
 		}
-		String token =  jwtUtil.generateToken(user.getUsername());
-		return new LoginResponseDto(token);
+		String accessToken =  jwtUtil.generateToken(user.getUsername());
+		RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+		
+		return new RefreshTokenResponseDto(accessToken, refreshToken.getToken());
 	}
 	
 }
