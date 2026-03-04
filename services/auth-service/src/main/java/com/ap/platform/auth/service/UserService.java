@@ -5,12 +5,15 @@ import java.util.Collections;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ap.platform.auth.dto.LoginRequestDto;
+import com.ap.platform.auth.dto.LoginResponseDto;
 import com.ap.platform.auth.dto.RegisterRequestDto;
 import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.entity.Role;
 import com.ap.platform.auth.entity.User;
 import com.ap.platform.auth.repository.RoleRepository;
 import com.ap.platform.auth.repository.UserRepository;
+import com.ap.platform.auth.security.JwtUtil;
 
 import jakarta.transaction.Transactional;
 
@@ -19,11 +22,14 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
 	
-	public UserService(UserRepository userRepository,RoleRepository roleRepository,PasswordEncoder passwordEncoder) {
+	
+	public UserService(UserRepository userRepository,RoleRepository roleRepository,PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtUtil = jwtUtil;
 	}
 	
 	@Transactional
@@ -47,6 +53,18 @@ public class UserService {
 		User savedUser =  userRepository.save(user);
 		
 		return new UserResponseDto(savedUser.getId(), savedUser.getUsername() , savedUser.getEmail());
+	}
+	
+	
+	public LoginResponseDto login(LoginRequestDto request) {
+		User user = userRepository.findByUsername(request.getUsername())
+					.orElseThrow(() -> new RuntimeException("Invalid username or password"));
+		
+		if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new RuntimeException("Invalid username or password");
+		}
+		String token =  jwtUtil.generateToken(user.getUsername());
+		return new LoginResponseDto(token);
 	}
 	
 }

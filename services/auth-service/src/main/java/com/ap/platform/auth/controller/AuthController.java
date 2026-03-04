@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ap.platform.auth.dto.LoginRequestDto;
+import com.ap.platform.auth.dto.LoginResponseDto;
 import com.ap.platform.auth.dto.RegisterRequestDto;
 import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.service.UserService;
@@ -16,13 +18,19 @@ import jakarta.validation.Valid;
 public class AuthController {
 
 	private final UserService userService;
+
 	public AuthController(UserService userService) {
 		this.userService = userService;
 	}
-	
+
 	@PostMapping("/register")
 	public UserResponseDto registerUser(@Valid @RequestBody RegisterRequestDto request) {
 		return userService.registerUser(request);
 	}
-	
+
+	@PostMapping("/login")
+	public LoginResponseDto login(@Valid @RequestBody LoginRequestDto request) {
+		return userService.login(request);
+	}
+
 }
