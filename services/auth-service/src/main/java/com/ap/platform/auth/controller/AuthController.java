@@ -13,7 +13,7 @@ import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.entity.RefreshToken;
 import com.ap.platform.auth.entity.User;
 import com.ap.platform.auth.repository.RefreshTokenRepository;
-import com.ap.platform.auth.security.JwtUtil;
+import com.ap.platform.security.JwtUtil;
 import com.ap.platform.auth.service.RefreshTokenService;
 import com.ap.platform.auth.service.UserService;
 
