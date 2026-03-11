@@ -1,4 +1,4 @@
-package com.ap.platform.auth.config;
+package com.ap.platform.gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,13 +11,13 @@ public class JwtConfig {
 
 	@Value("${jwt.secret}")
 	private String secret;
-
+	
 	@Value("${jwt.expiration}")
 	private long expiration;
-
+	
 	@Bean
 	public JwtUtil jwtUtil() {
-		System.out.println("Auth-service JWT secret: " + secret);
+		System.out.println("Gateway JWT secret: " + secret);
 		return new JwtUtil(secret,expiration);
 	}
 }

@@ -14,7 +14,7 @@ public class JwtUtil {
 	private final long expiration;
 
   	public JwtUtil(String secret, long expiration){
-		this.key = Keys.hmacShaKeyFor(secret.getBytes());
+		this.key = Keys.hmacShaKeyFor(secret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
 		this.expiration = expiration;
 	}
 	
@@ -53,7 +53,7 @@ public class JwtUtil {
 		return Jwts.parserBuilder()
 			.setSigningKey(key)
 			.build()
-			.parseClaimsJwt(token)
+			.parseClaimsJws(token)
 			.getBody();
 	}
 
