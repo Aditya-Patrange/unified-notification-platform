@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 	@GetMapping("/api/test")
-	public String test(@RequestHeader(value="X-User", required=false) String user) {
-		return "Authenticated user: "+user;
+	public String test(@RequestHeader(value="X-User") String user) {
+		return "Request from authenticated user: "+user;
 	}
 }
