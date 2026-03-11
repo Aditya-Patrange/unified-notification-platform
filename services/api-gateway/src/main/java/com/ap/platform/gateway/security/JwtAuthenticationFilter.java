@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 						        						.request(exchange.getRequest()
 						        						.mutate()
 						        						.header("X-User", username)
+						        						.header("X-Gateway-Auth", "true")
 						        						.build())
 						        					.build();
 	        
