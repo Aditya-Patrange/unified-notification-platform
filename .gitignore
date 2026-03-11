@@ -1,0 +1,17 @@
+# Maven build files 
+target/
+
+# Logs
+*.log
+
+# IDE files
+.project
+.classpath
+.settings/
+.idea/
+
+# OS files
+.DS_Store
+
+# Vim swap files
+*.swp
