@@ -1,5 +1,7 @@
 package com.ap.platform.auth.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,8 +63,14 @@ public class AuthController {
 		//create new refresh token
 		RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
 		
+		//extract roles 
+		List<String> roles = user.getRoles()
+				.stream()
+				.map(role -> role.getName())
+				.toList();	
+		
 		//generate new access token 
-		String newAcessToken = jwtUtil.generateToken(user.getUsername());
+		String newAcessToken = jwtUtil.generateToken(user.getUsername(),roles);
 		
 		return new RefreshTokenResponseDto(newAcessToken, newRefreshToken.getToken());
 		

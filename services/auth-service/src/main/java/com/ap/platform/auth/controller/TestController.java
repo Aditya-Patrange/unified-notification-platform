@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 	@GetMapping("/api/test")
-	public String test(@RequestHeader(value="X-User", required = false) String username,
+	public String test(@RequestHeader(value="X-User") String username,
+			@RequestHeader(value="X-Roles") String roles,
 			@RequestHeader(value = "X-Gateway-Auth", required = false) String gatewayAuth) {
 		
 		if(!"true".equals(gatewayAuth)) {

@@ -1,6 +1,7 @@
 package com.ap.platform.auth.service;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,12 @@ public class UserService {
 		if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new RuntimeException("Invalid username or password");
 		}
-		String accessToken =  jwtUtil.generateToken(user.getUsername());
+		List<String> roles = user.getRoles()
+								.stream()
+								.map(role -> role.getName())
+								.toList();	
+		
+		String accessToken =  jwtUtil.generateToken(user.getUsername(),roles);
 		RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 		
 		return new RefreshTokenResponseDto(accessToken, refreshToken.getToken());
