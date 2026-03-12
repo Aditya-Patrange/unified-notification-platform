@@ -67,6 +67,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 						        						.header("X-User", username)
 						        						.header("X-Roles", roleHeader)
 						        						.header("X-Gateway-Auth", "true")
+						        						.header("X-Gateway-Secret", "gateway-secret-key")
 						        						.build())
 						        					.build();
 	        
