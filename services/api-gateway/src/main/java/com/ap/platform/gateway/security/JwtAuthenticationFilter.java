@@ -1,5 +1,7 @@
 package com.ap.platform.gateway.security;
 
+import java.util.List;
+
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
@@ -9,9 +11,11 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.ap.platform.security.JwtUtil;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 	private final JwtUtil jwtUtil;
 
@@ -34,7 +38,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 	                .getHeaders()
 	                .getFirst(HttpHeaders.AUTHORIZATION);
 
-	        System.out.println("Auth header: " + authHeader);
+	  log.info("Auth header: " + authHeader);
 	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 	            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
 	            return exchange.getResponse().setComplete();
@@ -42,10 +46,10 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 
 	        String token = authHeader.substring(7);
 	        
-	        System.out.println("Token received in gateway: " + token);
+	        log.info("Token received in gateway: " + token);
 	        boolean valid = jwtUtil.validateToken(token);
 
-	        System.out.println("Token valid: " + valid);
+	        log.info("Token valid: " + valid);
 
 	        if (!valid) {
 	            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -53,10 +57,15 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered{
 	        }
 
 	        String username = jwtUtil.extractUsername(token);
+	        
+	        List<String> roles = jwtUtil.extractRoles(token);
+	        String roleHeader = String.join(",",roles);
+	        
 	        ServerWebExchange mutatedExchange = exchange.mutate()
 						        						.request(exchange.getRequest()
 						        						.mutate()
 						        						.header("X-User", username)
+						        						.header("X-Roles", roleHeader)
 						        						.header("X-Gateway-Auth", "true")
 						        						.build())
 						        					.build();

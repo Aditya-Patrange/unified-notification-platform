@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 import com.ap.platform.security.JwtUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class JwtConfig {
 
 	@Value("${jwt.secret}")
@@ -17,7 +20,7 @@ public class JwtConfig {
 	
 	@Bean
 	public JwtUtil jwtUtil() {
-		System.out.println("Gateway JWT secret: " + secret);
+		log.info("Gateway JWT secret: " + secret);
 		return new JwtUtil(secret,expiration);
 	}
 }
