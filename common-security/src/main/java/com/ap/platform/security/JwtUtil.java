@@ -8,6 +8,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import java.util.List;
 
 public class JwtUtil {
 	private final Key key;
@@ -19,9 +20,10 @@ public class JwtUtil {
 	}
 	
 	//generate token
-	public String generateToken(String username){
+	public String generateToken(String username, List<String> roles){
 	  return Jwts.builder()
 			.setSubject(username)
+			.claim("roles",roles)
 			.setIssuedAt(new Date())
 			.setExpiration(new Date(System.currentTimeMillis() + expiration))
 			.signWith(key, SignatureAlgorithm.HS256)
@@ -30,6 +32,13 @@ public class JwtUtil {
 	//extract username
 	public String extractUsername(String token){
 	   return getClaims(token).getSubject();
+	}
+	
+	//extract roles
+	@SuppressWarnings("unchecked")
+	public List<String> extractRoles(String token){
+		Claims claims = getClaims(token);
+		return (List<String>) claims.get("roles");
 	}
 
 	// validate token
