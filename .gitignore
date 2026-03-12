@@ -9,6 +9,7 @@ target/
 .classpath
 .settings/
 .idea/
+*.iml
 
 # OS files
 .DS_Store
