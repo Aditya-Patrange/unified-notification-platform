@@ -10,16 +10,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.ap.platform.auth.security.ServiceJwtValidationFilter;
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final GatewayAuthenticationFilter gatewayAuthenticationFilter;
+	private final ServiceJwtValidationFilter serviceJwtValidationFilter;
 	
-	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,GatewayAuthenticationFilter gatewayAuthenticationFilter) {
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+			GatewayAuthenticationFilter gatewayAuthenticationFilter,
+			ServiceJwtValidationFilter serviceJwtValidationFilter)
+	{
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 		this.gatewayAuthenticationFilter = gatewayAuthenticationFilter;
+		this.serviceJwtValidationFilter = serviceJwtValidationFilter;
 	}
 
 	@Bean
@@ -35,8 +42,12 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
 				.httpBasic(httpBasic -> httpBasic.disable()).formLogin(form -> form.disable())
+				//1) verify request came from gateway
 				.addFilterBefore(gatewayAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+				//2) verify jwt signature
+				.addFilterAfter(serviceJwtValidationFilter, GatewayAuthenticationFilter.class)
+				//3) populate spring security context
+				.addFilterAfter(jwtAuthenticationFilter, ServiceJwtValidationFilter.class);
 
 		return http.build();
 	}
