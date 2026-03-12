@@ -15,9 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+	private final GatewayAuthenticationFilter gatewayAuthenticationFilter;
+	
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,GatewayAuthenticationFilter gatewayAuthenticationFilter) {
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+		this.gatewayAuthenticationFilter = gatewayAuthenticationFilter;
 	}
 
 	@Bean
@@ -33,6 +35,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
 				.httpBasic(httpBasic -> httpBasic.disable()).formLogin(form -> form.disable())
+				.addFilterBefore(gatewayAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
