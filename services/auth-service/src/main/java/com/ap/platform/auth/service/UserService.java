@@ -14,9 +14,9 @@ import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.entity.RefreshToken;
 import com.ap.platform.auth.entity.Role;
 import com.ap.platform.auth.entity.User;
-import com.ap.platform.auth.events.UserRegisteredEvent;
 import com.ap.platform.auth.repository.RoleRepository;
 import com.ap.platform.auth.repository.UserRepository;
+import com.ap.platform.events.UserRegisteredEvent;
 import com.ap.platform.security.JwtUtil;
 
 import jakarta.transaction.Transactional;
