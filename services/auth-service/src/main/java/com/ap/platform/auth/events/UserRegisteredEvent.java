@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 public class UserRegisteredEvent {
 
-	private String username;
-	private String email;
-	private LocalDateTime timestamp;
+	private final String username;
+	private final String email;
+	private final LocalDateTime timestamp;
 	
-	public UserRegisteredEvent(String username,String email, String timestamp) {
+	public UserRegisteredEvent(String username,String email) {
 		this.username = username;
 		this.email = email;
 		this.timestamp = LocalDateTime.now();

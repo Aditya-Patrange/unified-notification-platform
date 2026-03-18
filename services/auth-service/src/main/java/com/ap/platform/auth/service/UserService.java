@@ -3,6 +3,7 @@ package com.ap.platform.auth.service;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import com.ap.platform.auth.dto.UserResponseDto;
 import com.ap.platform.auth.entity.RefreshToken;
 import com.ap.platform.auth.entity.Role;
 import com.ap.platform.auth.entity.User;
+import com.ap.platform.auth.events.UserRegisteredEvent;
 import com.ap.platform.auth.repository.RoleRepository;
 import com.ap.platform.auth.repository.UserRepository;
 import com.ap.platform.security.JwtUtil;
@@ -26,14 +28,17 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 	private final RefreshTokenService refreshTokenService;
+	private final ApplicationEventPublisher eventPublisher;
 	
 	public UserService(UserRepository userRepository,RoleRepository roleRepository,
-			PasswordEncoder passwordEncoder, JwtUtil jwtUtil,RefreshTokenService refreshTokenService) {
+			PasswordEncoder passwordEncoder, JwtUtil jwtUtil,RefreshTokenService refreshTokenService,
+			ApplicationEventPublisher eventPublisher) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtUtil = jwtUtil;
 		this.refreshTokenService = refreshTokenService;
+		this.eventPublisher = eventPublisher;
 	}
 	
 	@Transactional
@@ -56,7 +61,13 @@ public class UserService {
 		
 		User savedUser =  userRepository.save(user);
 		
+		//for notification (publish event)
+		eventPublisher.publishEvent(new UserRegisteredEvent(savedUser.getUsername(), savedUser.getEmail()));
+		
+		//change this for notification
 		return new UserResponseDto(savedUser.getId(), savedUser.getUsername() , savedUser.getEmail());
+		
+		
 	}
 	
 	
