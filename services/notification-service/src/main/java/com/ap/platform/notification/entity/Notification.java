@@ -49,11 +49,18 @@ public class Notification {
 		this.id = id;
 	}
 	
-	public String getUSername() {
+	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 	public String getMessage() {
@@ -63,4 +70,11 @@ public class Notification {
 		this.message = message;
 	}
 	
+	public NotificationStatus getStatus() {
+		return status;
+	}
+	
+	public void setStatus(NotificationStatus status) {
+		this.status = status;
+	}
 }
