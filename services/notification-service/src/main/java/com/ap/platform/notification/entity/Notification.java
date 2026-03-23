@@ -1,5 +1,6 @@
 package com.ap.platform.notification.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.ap.platform.notification.model.NotificationStatus;
@@ -36,6 +37,9 @@ public class Notification {
 	
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+	
+	@Column(name = "read_at")
+	private LocalDateTime readAt;
 	
 	@PrePersist
 	public void prePersist() {
@@ -76,5 +80,12 @@ public class Notification {
 	
 	public void setStatus(NotificationStatus status) {
 		this.status = status;
+	}
+	
+	public void setReadAt(LocalDateTime readAt) {
+		this.readAt = readAt;
+	}
+	public LocalDateTime getReadAt() {
+		return readAt;
 	}
 }
