@@ -12,33 +12,43 @@ import com.ap.platform.notification.repository.NotificationRepository;
 
 import jakarta.transaction.Transactional;
 
+/**
+ * Previously, all notifications were returned 
+ * Now introducing expiry logic to hide old READ notifications
+ */
+
 @Service
 public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
-	
+
 	public NotificationService(NotificationRepository notificationRepository) {
 		this.notificationRepository = notificationRepository;
 	}
-	
-	public Page<Notification> getUserNotifications(String username, Pageable pageable){
-		
-			LocalDateTime expiTime = LocalDateTime.now().minusDays(2);
-			//return notificationRepository.findByUsernameOrderByCreatedAtDesc(username, expiTime, pageable);
-			return notificationRepository.findActiveNotifications(username, expiTime, pageable);
+
+	public Page<Notification> getUserNotifications(String username, Pageable pageable) {
+
+		// Calculate expiry threshold (2 days ago)
+		// Any READ notification older than this will be hidden
+		LocalDateTime expiTime = LocalDateTime.now().minusDays(2);
+		// return notificationRepository.findByUsernameOrderByCreatedAtDesc(username,
+		// expiTime, pageable);
+
+		// Fetch only active (non-expired) notifications
+		return notificationRepository.findActiveNotifications(username, expiTime, pageable);
 	}
 
 	@Transactional // Ensures atomic update and enables JPA dirty checking
 	public void markAsRead(Long id) {
 		// Fetch notification by ID or throw exception if not found
 		Notification notification = notificationRepository.findById(id)
-				.orElseThrow(()-> new RuntimeException("Notification not found"));
-		 // Update status to READ
+				.orElseThrow(() -> new RuntimeException("Notification not found"));
+		// Update status to READ
 		notification.setStatus(NotificationStatus.READ);
 		// Set the timestamp when notification was read (used later for expiry logic)
 		notification.setReadAt(LocalDateTime.now());
-	
+
 		// No explicit save() required
-	    // JPA will automatically persist changes due to dirty checking
+		// JPA will automatically persist changes due to dirty checking
 	}
 }

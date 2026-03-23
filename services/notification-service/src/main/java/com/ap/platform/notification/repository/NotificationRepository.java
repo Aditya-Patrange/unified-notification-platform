@@ -14,8 +14,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	List<Notification> findByUsername(String username);
 	
+	//OLD (remove usage)
 	//Page<Notification> findByUsernameOrderByCreatedAtDesc(String username,Pageable pageable);
 	
+	// Fetch only active notifications
+	// - UNREAD → always included
+	// - READ → included only if read within last 2 days
 	Page<Notification> findActiveNotifications(
 			@Param("username") String username, 
 			@Param("expiryTime") LocalDateTime expiryTime,
