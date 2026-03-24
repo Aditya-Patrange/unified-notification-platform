@@ -7,14 +7,16 @@ public class UserRegisteredEvent {
 	private String username;
 	private String email;
 	private LocalDateTime timestamp;
+	private String eventId;
 	
 	public UserRegisteredEvent() {
 	}
 
-	public UserRegisteredEvent(String username,String email) {
+	public UserRegisteredEvent(String username,String email, String eventId) {
 		this.username = username;
 		this.email = email;
 		this.timestamp = LocalDateTime.now();
+		this.eventId = eventId;
 	}
 	
 	public String getUsername() {
@@ -36,4 +38,12 @@ public class UserRegisteredEvent {
 	public void setTimestamp(LocalDateTime timestamp){
 		this.timestamp = timestamp;
 	}
+	public String getEventId(){
+		return eventId;
+	}
+	public void setEventId(String eventId){
+		this.evenId = eventId;	
+	}
+
+
 }
