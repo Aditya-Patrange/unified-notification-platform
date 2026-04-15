@@ -1,6 +1,5 @@
 package com.ap.platform.notification.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.ap.platform.notification.model.NotificationStatus;

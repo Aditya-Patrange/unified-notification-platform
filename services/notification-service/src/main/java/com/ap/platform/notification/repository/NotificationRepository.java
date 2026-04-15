@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.ap.platform.notification.entity.Notification;
@@ -20,6 +21,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	// Fetch only active notifications
 	// - UNREAD → always included
 	// - READ → included only if read within last 2 days
+	@Query("""
+			SELECT n FROM Notification n 
+			WHERE n.username = :username 
+			AND (n.status = 'UNREAD' OR n.readAt > :expiryTime)
+			ORDER BY n.createdAt DESC
+			""")
 	Page<Notification> findActiveNotifications(
 			@Param("username") String username, 
 			@Param("expiryTime") LocalDateTime expiryTime,

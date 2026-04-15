@@ -43,6 +43,7 @@ public class NotificationController {
 	// Uses PATCH because we are partially updating the resource (only status & readAt)
 	@PatchMapping("/{id}/read")
 	public ResponseEntity<String> markAsRead(@PathVariable Long id) {
+		System.out.println("DEBUG: markAsRead hit with id = " + id);
 	    notificationService.markAsRead(id);
 	    return ResponseEntity.ok("Marked as read");
 	}
